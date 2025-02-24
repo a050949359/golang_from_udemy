@@ -18,16 +18,16 @@ type Account struct {
 }
 
 type Entry struct {
-	ID        int64         `json:"id"`
-	AccountID sql.NullInt64 `json:"account_id"`
-	Amount    int64         `json:"amount"`
-	CreatedAt time.Time     `json:"created_at"`
+	ID        int64     `json:"id"`
+	AccountID int64     `json:"account_id"`
+	Amount    int64     `json:"amount"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Transfer struct {
-	ID            int64         `json:"id"`
-	FormAccountID sql.NullInt64 `json:"form_account_id"`
-	ToAccountID   sql.NullInt64 `json:"to_account_id"`
-	Amount        sql.NullInt64 `json:"amount"`
-	CreatedAt     sql.NullTime  `json:"created_at"`
+	ID            int64        `json:"id"`
+	FormAccountID int64        `json:"form_account_id"`
+	ToAccountID   int64        `json:"to_account_id"`
+	Amount        int64        `json:"amount"`
+	CreatedAt     sql.NullTime `json:"created_at"`
 }
