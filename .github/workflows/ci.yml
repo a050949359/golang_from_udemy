@@ -24,7 +24,9 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: 123456
           POSTGRES_DB: simple_bank
-        # Set health checks to wait until postgres has started
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -40,7 +42,7 @@ jobs:
         sudo mv migrate /usr/bin/
 
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://root:123456@127.0.0.53:53/simple_bank?sslmode=disable" -verbose up
+      run: migrate -path db/migration -database "postgresql://root:123456@postgres:5432/simple_bank?sslmode=disable" -verbose up
 
     - name: Set up Go
       uses: actions/setup-go@v4
