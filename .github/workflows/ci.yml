@@ -40,7 +40,7 @@ jobs:
         sudo mv migrate /usr/bin/
 
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://root:123456@postgres:53/simple_bank?sslmode=disable" -verbose up
+      run: migrate -path db/migration -database "postgresql://root:123456@127.0.0.53:53/simple_bank?sslmode=disable" -verbose up
 
     - name: Set up Go
       uses: actions/setup-go@v4
