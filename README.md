@@ -30,3 +30,5 @@ sqlc:
 
 test: 
     go test -v -cover ./...
+
+lesson 9 descibe mysql postgresql isolation level & diff
