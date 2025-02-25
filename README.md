@@ -1,7 +1,7 @@
 # golang_from_udemy
 Backend Master Class [Golang + Postgres + Kubernetes + gRPC]
 
-gin migration sqlc
+viper gin migration sqlc
 
 # at host
 
@@ -34,3 +34,6 @@ test:
     go test -v -cover ./...
 
 lesson 9 descibe mysql postgresql isolation level & diff
+
+鬼打牆的 = =
+mockgen -destination db/mock.store.go github.com/golang_from_udemy/db/sqlc Store
