@@ -9,8 +9,8 @@ import (
 )
 
 type CreateAccountRequest struct {
-	Owner    string `json:"owner" bingding:"required"`
-	Currency string `json:"currency" bingding:"required, oneof=USD EUR"`
+	Owner    string `json:"owner" binding:"required"`
+	Currency string `json:"currency" binding:"required,currency"`
 }
 
 
