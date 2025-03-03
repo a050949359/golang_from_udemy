@@ -3,16 +3,18 @@ package db
 import (
 	"context"
 	"database/sql"
-	"github.com/golang_from_udemy/util"
 	"testing"
 	"time"
 
+	"github.com/golang_from_udemy/util"
 	"github.com/stretchr/testify/require"
 )
 
 func CreateRandomAccount(t *testing.T) Account {
+	user := CreateRandomUser(t)
+
 	arg := CreateAccountParams{
-		Owner:    util.RandomOwner(),
+		Owner:    user.Username,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}

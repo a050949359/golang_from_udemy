@@ -36,4 +36,4 @@ test:
 lesson 9 descibe mysql postgresql isolation level & diff
 
 鬼打牆的 = =
-mockgen -destination db/mock.store.go github.com/golang_from_udemy/db/sqlc Store
+mockgen -destination db/mock/store.go github.com/golang_from_udemy/db/sqlc Store
