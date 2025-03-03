@@ -34,6 +34,7 @@ test:
     go test -v -cover ./...
 
 lesson 9 descibe mysql postgresql isolation level & diff
+lesson 18 user api mock test 聽不懂
 
 鬼打牆的 = =
 mockgen -destination db/mock/store.go github.com/golang_from_udemy/db/sqlc Store
