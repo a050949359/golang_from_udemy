@@ -1,7 +1,7 @@
 package api
 
 import (
-	"database/sql"
+	// "database/sql"
 	"net/http"
 	"time"
 
@@ -18,12 +18,22 @@ type CreateUserRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }
 
-type CreateUserResponse struct {
+type userResponse struct {
 	Username          string    `json:"username"`
 	FullName          string    `json:"full_name"`
 	Email             string    `json:"email"`
 	PasswordChangedAt time.Time `json:"password_changed_at"`
 	CreatedAt         time.Time `json:"created_at"`
+}
+
+func newUserResponse(user db.User) userResponse {
+	return userResponse{
+		Username: user.Username,
+		Email: user.Email,
+		FullName: user.FullName,
+		PasswordChangedAt: user.PasswordChangedAt,
+		CreatedAt: user.CreatedAt,
+	}
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -60,13 +70,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	rsp := CreateUserResponse{
-		Username: user.Username,
-		Email: user.Email,
-		FullName: user.FullName,
-		PasswordChangedAt: user.PasswordChangedAt,
-		CreatedAt: user.CreatedAt,
-	}
+	rsp := newUserResponse(user)
 	ctx.JSON(http.StatusOK, rsp)
 }
 
@@ -75,55 +79,44 @@ type getUserRequest struct {
 }
 
 
-func (server *Server) getUser(ctx *gin.Context) {
-	var req getUserRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	user, err := server.store.GetUser(ctx, req.Username)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	// empty data for test failed 
-	// account := db.Account{}
-
-	ctx.JSON(http.StatusOK, user)
-
-}
-
-// type listUserRequest struct {
-// 	PageID int32 `form:"page_id" binding:"required,min=1"`
-// 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
-// }
-
-
-// func (server *Server) listUser(ctx *gin.Context) {
-// 	var req listUserRequest
-// 	if err := ctx.ShouldBindQuery(&req); err != nil {
+// func (server *Server) getUser(ctx *gin.Context) {
+// 	var req getUserRequest
+// 	if err := ctx.ShouldBindUri(&req); err != nil {
 // 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 // 		return
 // 	}
 
-// 	arg := db.ListUserParams {
-// 		Limit: req.PageSize,
-// 		Offset: (req.PageID - 1) * req.PageSize,
-// 	}
-
-// 	users, err := server.store.ListUser(ctx, arg)
+// 	user, err := server.store.GetUser(ctx, req.Username)
 // 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			ctx.JSON(http.StatusNotFound, errorResponse(err))
+// 			return
+// 		}
+
 // 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 // 		return
 // 	}
 
-// 	ctx.JSON(http.StatusOK, users)
+// 	ctx.JSON(http.StatusOK, user)
 
+// }
+
+// type loginUserRequest struct {
+// 	Username string `json:"username" binding:"required, alphanum"`
+// 	Password string `json:"password" binding:"required, min=6"`
+// }
+
+// type loginUserResponse struct {
+// 	AccessToken string `json:"access_token"`
+// 	User userResponse `json:"user"`
+// }
+
+// func (server *Server) loginUser(ctx *gin.Context) {
+// 	var req loginUserRequest
+// 	if err := ctx.ShouldBindJSON(&req); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+// 		return
+// 	}
+
+// 	user,err := server.store.GetUser(ctx, req.Username)
 // }
