@@ -2,10 +2,12 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/golang_from_udemy/db/sqlc"
+	"github.com/golang_from_udemy/token"
 	"github.com/lib/pq"
 )
 
@@ -22,8 +24,9 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.CreateAccountParams {
-		Owner: req.Owner,
+		Owner: authPayload.Username,
 		Balance: 0,
 		Currency: req.Currency,
 	}
@@ -68,6 +71,13 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if account.Owner != authPayload.Username {
+		err := errors.New("account doesn't belong to the authenticates user")
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
+
 	// empty data for test failed 
 	// account := db.Account{}
 
@@ -88,7 +98,9 @@ func (server *Server) listAccount(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.ListAccountParams {
+		Owner: authPayload.Username,
 		Limit: req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}

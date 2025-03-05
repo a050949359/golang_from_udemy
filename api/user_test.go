@@ -4,7 +4,6 @@ import (
 	"bytes"
 	// "database/sql"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -30,9 +29,9 @@ func TestCreateUserAPI(t *testing.T) {
 			name:      "OK",
 			username: user.Username,
 			buildStubs: func(store *mockdb.MockStore) {
-				store.EXPECT().GetUser(
+				store.EXPECT().CreateUser(
 					gomock.Any(),
-					gomock.Eq(user.Username),
+					gomock.Any(),
 				).Times(1).Return(user, nil)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -95,16 +94,26 @@ func TestCreateUserAPI(t *testing.T) {
 			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/user/%s", tc.username)
-			request, err := http.NewRequest(http.MethodGet, url, nil)
+			userReq := CreateUserRequest{
+				Username: user.Username,
+				Password: user.HashedPassword,
+				FullName: user.FullName,
+				Email: user.Email,
+			}
+
+			userBytes, err := json.Marshal(userReq)
+			require.NoError(t, err)
+
+			bodyReader := bytes.NewReader(userBytes)
+
+			url := "/user"
+			request, err := http.NewRequest(http.MethodPost, url, bodyReader)
 			require.NoError(t, err)
 
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
-
 	}
-
 }
 
 func randomUser() db.User {
@@ -125,5 +134,9 @@ func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
 	var getUser db.User
 	err = json.Unmarshal(data, &getUser)
 	require.NoError(t, err)
-	require.Equal(t, user, getUser)
+	require.Equal(t, user.Username, getUser.Username)
+	require.Equal(t, user.FullName, getUser.FullName)
+	require.Equal(t, user.Email, getUser.Email)
+	require.Equal(t, user.CreatedAt, getUser.CreatedAt)
+	require.Equal(t, user.PasswordChangedAt, getUser.PasswordChangedAt)
 }
